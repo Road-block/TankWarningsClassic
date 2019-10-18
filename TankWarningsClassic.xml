@@ -1,0 +1,260 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/
+..\..\FrameXML\UI.xsd">
+ <Script file="Localization.lua"/>
+ <Script file="TankWarningsClassic.lua"/>
+ <Frame name="TankWarningsClassicConfigFrame" 
+    toplevel="true" parent="UIParent" frameStrata="DIALOG" 
+    hidden="true" enableMouse="true">
+	<Size><AbsDimension x="448" y="280"/></Size>
+	<Anchors><Anchor point="CENTER"/></Anchors>
+	<Backdrop bgFile="Interface\DialogFrame\UI-DialogBox-Background" 
+		edgeFile="Interface\DialogFrame\UI-DialogBox-Border" tile="true">
+		<BackgroundInsets>
+			<AbsInset left="11" right="12" top="12" bottom="11"/>
+		</BackgroundInsets>
+		<TileSize><AbsValue val="32"/></TileSize>
+		<EdgeSize><AbsValue val="32"/></EdgeSize>
+	</Backdrop>
+	<Scripts>
+		<OnLoad function="TankWarningsClassic_OnConfigFrameLoaded"/>
+		<OnShow function="TankWarningsClassic_OnConfigFrameShow"/>
+	</Scripts>
+	<Layers>
+		<Layer level="ARTWORK">
+			<Texture file="Interface\DialogFrame\UI-DialogBox-Header">
+				<Size><AbsDimension x="320" y="64"/></Size>
+				<Anchors>
+					<Anchor point="TOP">
+					<Offset><AbsDimension x="0" y="12"/></Offset>
+					</Anchor>
+				</Anchors>
+			</Texture>
+		</Layer>
+		<Layer level="OVERLAY">
+			<!-- Left area -->
+			
+			<FontString inherits="GameFontNormal" text="Tank Warnings Classic">
+				<Anchors>
+					<Anchor point="TOP" relativeTo="$parent">
+					<Offset><AbsDimension x="0" y="-2"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString inherits="GameFontNormal" text="Raid channel:">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="-115"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString inherits="GameFontNormal" text="When not in raid/group:">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="20" y="-175"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			
+			<!-- Right area -->
+			<FontString inherits="GameFontNormal" text="Warrior">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="200" y="-30"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+			<FontString inherits="GameFontNormal" text="Druid">
+				<Anchors>
+					<Anchor point="TOPLEFT" relativeTo="$parent">
+					<Offset><AbsDimension x="200" y="-160"/></Offset>
+					</Anchor>
+				</Anchors>
+			</FontString>
+		</Layer>
+		
+	</Layers>
+	<Frames>
+		<!-- Left area -->
+		
+		<CheckButton name="$parentShowInRaidsButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="20" y="-30"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffShow in raids?");
+					self._option = "showInRaids";
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentShowInPartiesButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="20" y="-55"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffShow in parties?");
+					self._option = "showInParties";
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentShowExpirationsButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="20" y="-80"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffShow expirations?");
+					self._option = "showExpirations";
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<Button name="$parentRaidDropDown" inherits="UIDropDownMenuTemplate">
+		   	<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="20" y="-135"/></Offset>
+				</Anchor>
+			</Anchors>
+		   <Scripts>
+        <OnLoad>
+            UIDropDownMenu_Initialize(self, TankWarningsClassic_LoadRaidOptions);
+            self._option = "raidOption";
+        </OnLoad>
+		   </Scripts>
+	   </Button>
+		<Button name="$parentWarningFallbackDropDown" inherits="UIDropDownMenuTemplate">
+		   	<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="20" y="-195"/></Offset>
+				</Anchor>
+			</Anchors>
+		   <Scripts>
+	        <OnLoad>
+	            UIDropDownMenu_Initialize(self, TankWarningsClassic_LoadWarningFallbacks);
+	            self._option = "warningFallback";
+	        </OnLoad>
+		   </Scripts>
+	   </Button>
+		<Button name="$parentButtonClose" inherits="OptionsButtonTemplate" text="Close">
+			<Anchors>
+				<Anchor point="BOTTOMRIGHT">
+				<Offset><AbsDimension x="-12" y="16"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnClick function="TankWarningsClassic_OnConfigFrameClose"/>
+			</Scripts>
+		</Button>
+		
+		<!-- Right area -->
+		<CheckButton name="$parentLastStandButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-50"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffLast Stand");
+					self._option = TankWarningsClassic_L["Last Stand"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentShieldWallButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-70"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffShield Wall");
+					self._option = TankWarningsClassic_L["Shield Wall"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentChallengingShoutButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-90"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffChallenging Shout");
+					self._option = TankWarningsClassic_L["Challenging Shout"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentTauntButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-110"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffTaunt resist");
+					self._option = TankWarningsClassic_L["Taunt"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentMockingBlowButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-130"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffMocking Blow resist");
+					self._option = TankWarningsClassic_L["Mocking Blow"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentChallengingRoarButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-180"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffChallenging Roar");
+					self._option = TankWarningsClassic_L["Challenging Roar"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentGrowlButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="212" y="-200"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad> 
+					_G[self:GetName().."Text"]:SetText("|cffffffffGrowl resist");
+					self._option = TankWarningsClassic_L["Growl"];
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+	</Frames>
+	
+ </Frame>
+</Ui>

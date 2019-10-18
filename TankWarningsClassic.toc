@@ -1,0 +1,7 @@
+## Interface: 11302
+## Title: TankWarningsClassic
+## Version: 1.0.1
+## Notes: Show warnings for critical cooldowns and/or failed ability attempts
+## SavedVariables: TankWarningsClassicSV
+
+TankWarningsClassic.xml
