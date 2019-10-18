@@ -81,9 +81,9 @@ end
 
 ------- Raid options panel -------
 function TankWarningsClassic_RaidOptionSelected(self)
-	TankWarningsClassicSV[self._option] = self.value
-	UIDropDownMenu_SetSelectedValue(self, self.value)
-	_G[self:GetName().."Text"]:SetText(self.value)
+	TankWarningsClassicSV[TankWarningsClassicConfigFrameRaidDropDown._option] = self.value
+	UIDropDownMenu_SetSelectedValue(TankWarningsClassicConfigFrameRaidDropDown, self.value)
+	_G["TankWarningsClassicConfigFrameRaidDropDownText"]:SetText(self.value)
 end
 function TankWarningsClassic_LoadRaidOptions()
 	local info
@@ -101,9 +101,9 @@ end
 
 ------- Warning options panel -------
 function TankWarningsClassic_WarningFallbackSelected(self)
-	TankWarningsClassicSV[self._option] = self.value
-	UIDropDownMenu_SetSelectedValue(self, self.value)
-	_G[self:GetName().."Text"]:SetText(self.value)
+	TankWarningsClassicSV[TankWarningsClassicConfigFrameWarningFallbackDropDown._option] = self.value
+	UIDropDownMenu_SetSelectedValue(TankWarningsClassicConfigFrameWarningFallbackDropDown, self.value)
+	_G["TankWarningsClassicConfigFrameWarningFallbackDropDownText"]:SetText(self.value)
 end
 function TankWarningsClassic_LoadWarningFallbacks()
 	local info
