@@ -97,6 +97,11 @@ function TankWarningsClassic_LoadRaidOptions()
 	info.value = "Message"
 	info.func = TankWarningsClassic_RaidOptionSelected
 	UIDropDownMenu_AddButton(info)
+	info = UIDropDownMenu_CreateInfo()
+	info.text = "Say"
+	info.value = "Say"
+	info.func = TankWarningsClassic_RaidOptionSelected
+	UIDropDownMenu_AddButton(info)
 end
 
 ------- Warning options panel -------
@@ -185,6 +190,8 @@ function f:TWC_SendChatMessage(message)
 	if TankWarningsClassicSV.showInRaids == true and IsInRaid() == true then
 		if TankWarningsClassicSV.raidOption == "Warning" then
 			SendChatMessage(message, "RAID_WARNING", "Common")
+		elseif TankWarningsClassicSV.raidOption == "Say" then
+			SendChatMessage(message, "SAY", "Common")
 		else
 			SendChatMessage(message, "RAID", "Common")
 		end
