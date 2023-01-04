@@ -655,10 +655,24 @@
 				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
 			</Scripts>
 		</CheckButton>
-		<CheckButton name="$parentRighteousDefenseButton" inherits="OptionsCheckButtonTemplate">
+		<CheckButton name="$parentArdentDefenderButton" inherits="OptionsCheckButtonTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parent">
 				<Offset><AbsDimension x="400" y="-200"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					self._option = TankWarningsClassic._opt.ardent_defender;
+					_G[self:GetName().."Text"]:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(self._option));
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentRighteousDefenseButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="400" y="-220"/></Offset>
 				</Anchor>
 			</Anchors>
 			<Scripts>

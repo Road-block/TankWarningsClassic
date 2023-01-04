@@ -19,6 +19,7 @@ local survival_instincts = (GetSpellInfo(61336))
 local righteous_defense = (GetSpellInfo(31789))
 local righteous_fury = (GetSpellInfo(25780))
 local divine_protection = (GetSpellInfo(498))
+local ardent_defender = (GetSpellInfo(66233))
 local frost_presence = (GetSpellInfo(48263))
 local dark_command = (GetSpellInfo(56222))
 local death_grip = (GetSpellInfo(49576))
@@ -38,6 +39,7 @@ twc._opt.barkskin = barkskin
 twc._opt.survival_instincts = survival_instincts
 twc._opt.righteous_defense = righteous_defense
 twc._opt.divine_protection = divine_protection
+twc._opt.ardent_defender = ardent_defender
 twc._opt.dark_command = dark_command
 twc._opt.death_grip = death_grip
 twc._opt.army_of_dead = army_of_dead
@@ -117,6 +119,7 @@ function twc.OnLoad(self)
 			[survival_instincts] = true,
 			[righteous_defense] = true,
 			[divine_protection] = true,
+			[ardent_defender] = true,
 			[dark_command] = true,
 			[death_grip] = true,
 			[army_of_dead] = true,
@@ -284,58 +287,62 @@ function f:PLAYER_REGEN_DISABLED(event, ...)
 	self._combatStart = GetTime()
 end
 
-local subevents = {["SPELL_CAST_SUCCESS"] = true, ["SPELL_MISSED"] = true}
+local subevents = { ["SPELL_CAST_SUCCESS"] = true, ["SPELL_MISSED"] = true, ["SPELL_AURA_APPLIED"] = true, }
 function f:COMBAT_LOG_EVENT_UNFILTERED(event)
 	local timestamp, spellType, hideCaster, sourceGUID, sourceName, sourceflags, sourceflags2, destGUID, destName, destFlags, destFlags2, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
 	if not subevents[spellType] then return end
-	if sourceGUID == playerGUID then
-		if spellType == "SPELL_CAST_SUCCESS" then
-			--Casts with critical expirations
-			if spellName == last_stand or spellName == shield_wall
-				or spellName == barkskin or spellName == survival_instincts
-				or spellName == divine_protection
-				or spellName == icebound_fort then
-				f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
-				if TankWarningsClassicSV.showExpirations == true then
-					for i=1,40 do
-						local name,icon,count,debuffType,duration,expirationTime = UnitBuff("player",i)
-						if name == spellName then
-							C_Timer.After(duration-3, function()
-									if UnitIsDeadOrGhost("player") ~= true then
-										f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s will expire in 3 seconds!"], spellName))
-									end
-								end)
-							break
-						end
+	if sourceGUID ~= playerGUID then return end
+
+	if spellType == "SPELL_CAST_SUCCESS" then
+		--Casts with critical expirations
+		if spellName == last_stand or spellName == shield_wall
+			or spellName == barkskin or spellName == survival_instincts
+			or spellName == divine_protection
+			or spellName == icebound_fort then
+			f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
+			if TankWarningsClassicSV.showExpirations == true then
+				for i=1,40 do
+					local name,icon,count,debuffType,duration,expirationTime = UnitBuff("player",i)
+					if name == spellName then
+						C_Timer.After(duration-3, function()
+								if UnitIsDeadOrGhost("player") ~= true then
+									f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s will expire in 3 seconds!"], spellName))
+								end
+							end)
+						break
 					end
 				end
-			--Casts without critical expirations
-			elseif spellName == challenging_shout
-				or spellName == challenging_roar
-				or spellName == army_of_dead
-				or spellName == anti_magic_shell
-				or spellName == frenzied_regeneration then
-				f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
 			end
-		--Failures
-		elseif spellType == "SPELL_MISSED" then
-			--We COULD look for the 15th argument of ... here for the type, but we'll just declare any miss as "resisted"
-			if spellName == taunt or spellName == mocking_blow
-				or spellName == growl
-				or spellName == dark_command or spellName == death_grip
-				or spellName == righteous_defense then
-				if missType == "IMMUNE" then
-					f:TWC_SendChatMessage(string.format(_G.SPELLIMMUNESELFOTHER,spellName,destName))
-				else
-					f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s resisted!"], spellName))
-				end
+		--Casts without critical expirations
+		elseif spellName == challenging_shout
+			or spellName == challenging_roar
+			or spellName == army_of_dead
+			or spellName == anti_magic_shell
+			or spellName == frenzied_regeneration then
+			f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
+		end
+	elseif spellType == "SPELL_AURA_APPLIED" then
+		if spellName == ardent_defender and missType == "DEBUFF" then
+			f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
+		end
+	--Failures
+	elseif spellType == "SPELL_MISSED" then
+		--We COULD look for the 15th argument of ... here for the type, but we'll just declare any miss as "resisted"
+		if spellName == taunt or spellName == mocking_blow
+			or spellName == growl
+			or spellName == dark_command or spellName == death_grip
+			or spellName == righteous_defense then
+			if missType == "IMMUNE" then
+				f:TWC_SendChatMessage(string.format(_G.SPELLIMMUNESELFOTHER,spellName,destName))
 			else
-				if missType == "DODGE" or missType == "PARRY" or missType == "MISS" then
-					if TankWarningsClassicSV.earlyCombat > 0 then
-						local since_combat = GetTime() - self._combatStart
-						if TWC_isTanking() and (since_combat <= tonumber(TankWarningsClassicSV.earlyCombat)) then
-							f:TWC_SendChatMessage(string.format("%s %s!",spellName,_G["ACTION_SPELL_MISSED_"..missType]))
-						end
+				f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s resisted!"], spellName))
+			end
+		else
+			if missType == "DODGE" or missType == "PARRY" or missType == "MISS" then
+				if TankWarningsClassicSV.earlyCombat > 0 then
+					local since_combat = GetTime() - self._combatStart
+					if TWC_isTanking() and (since_combat <= tonumber(TankWarningsClassicSV.earlyCombat)) then
+						f:TWC_SendChatMessage(string.format("%s %s!",spellName,_G["ACTION_SPELL_MISSED_"..missType]))
 					end
 				end
 			end

@@ -1,6 +1,6 @@
 ## Interface: 30400
 ## Title: TankWarningsClassic
-## Version: 1.2.4
+## Version: 1.2.5
 ## Notes: Send chat warnings for critical tank cooldowns and/or failed ability attempts
 ## SavedVariablesPerCharacter: TankWarningsClassicSV
 
