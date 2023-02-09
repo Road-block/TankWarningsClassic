@@ -683,6 +683,20 @@
 				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
 			</Scripts>
 		</CheckButton>
+      <CheckButton name="$parentHandReckoningButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="400" y="-240"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					self._option = TankWarningsClassic._opt.hand_reckoning;
+					_G[self:GetName().."Text"]:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(self._option.." "..ERR_FEIGN_DEATH_RESISTED));
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
 	</Frames>
 	
  </Frame>

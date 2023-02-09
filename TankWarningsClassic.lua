@@ -17,6 +17,7 @@ local frenzied_regeneration = (GetSpellInfo(22842))
 local barkskin = (GetSpellInfo(22812))
 local survival_instincts = (GetSpellInfo(61336))
 local righteous_defense = (GetSpellInfo(31789))
+local hand_reckoning = (GetSpellInfo(62124))
 local righteous_fury = (GetSpellInfo(25780))
 local divine_protection = (GetSpellInfo(498))
 local ardent_defender = (GetSpellInfo(66233))
@@ -26,6 +27,7 @@ local death_grip = (GetSpellInfo(49576))
 local army_of_dead = (GetSpellInfo(42650))
 local icebound_fort = (GetSpellInfo(48792))
 local anti_magic_shell = (GetSpellInfo(48707))
+local hand_reckoning_glyph = 405004
 twc._opt = {}
 twc._opt.last_stand = last_stand
 twc._opt.shield_wall = shield_wall
@@ -38,6 +40,7 @@ twc._opt.frenzied_regeneration = frenzied_regeneration
 twc._opt.barkskin = barkskin
 twc._opt.survival_instincts = survival_instincts
 twc._opt.righteous_defense = righteous_defense
+twc._opt.hand_reckoning = hand_reckoning
 twc._opt.divine_protection = divine_protection
 twc._opt.ardent_defender = ardent_defender
 twc._opt.dark_command = dark_command
@@ -85,6 +88,16 @@ local TWC_isTanking = function()
 	return false
 end
 
+local TWC_hasGlyph = function(spell)
+	for id=1, GetNumGlyphSockets() do
+		local enabled, glyphType, glyphSpell, iconFilename = GetGlyphSocketInfo(id, GetActiveTalentGroup())
+		if enabled and glyphSpell == spell then
+			return true
+		end
+	end
+	return false
+end
+
 function twc.OnLoad(self)
 	print("|cffffff00"..label.." - Use /tankwarnings or /twc for more options.")
 	--load default values if they don't exist
@@ -118,6 +131,7 @@ function twc.OnLoad(self)
 			[barkskin] = true,
 			[survival_instincts] = true,
 			[righteous_defense] = true,
+			[hand_reckoning] = true,
 			[divine_protection] = true,
 			[ardent_defender] = true,
 			[dark_command] = true,
@@ -328,10 +342,11 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(event)
 	--Failures
 	elseif spellType == "SPELL_MISSED" then
 		--We COULD look for the 15th argument of ... here for the type, but we'll just declare any miss as "resisted"
-		if spellName == taunt or spellName == mocking_blow
-			or spellName == growl
-			or spellName == dark_command or spellName == death_grip
-			or spellName == righteous_defense then
+		if (spellName == taunt or spellName == mocking_blow)
+			or (spellName == growl)
+			or (spellName == dark_command or spellName == death_grip)
+			or (spellName == righteous_defense )
+			or (spellName == hand_reckoning and not TWC_hasGlyph(hand_reckoning_glyph) )then
 			if missType == "IMMUNE" then
 				f:TWC_SendChatMessage(string.format(_G.SPELLIMMUNESELFOTHER,spellName,destName))
 			else
