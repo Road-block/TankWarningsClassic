@@ -655,10 +655,24 @@
 				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
 			</Scripts>
 		</CheckButton>
-		<CheckButton name="$parentArdentDefenderButton" inherits="OptionsCheckButtonTemplate">
+		<CheckButton name="$parentRighteousDivineSacrificeButton" inherits="OptionsCheckButtonTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parent">
 				<Offset><AbsDimension x="400" y="-200"/></Offset>
+				</Anchor>
+			</Anchors>
+			<Scripts>
+				<OnLoad>
+					self._option = TankWarningsClassic._opt.divine_sacrifice;
+					_G[self:GetName().."Text"]:SetText(WHITE_FONT_COLOR:WrapTextInColorCode(self._option));
+				</OnLoad>
+				<OnClick function="TankWarningsClassic_OnConfigCheckButtonClicked"/>
+			</Scripts>
+		</CheckButton>
+		<CheckButton name="$parentArdentDefenderButton" inherits="OptionsCheckButtonTemplate">
+			<Anchors>
+				<Anchor point="TOPLEFT" relativeTo="$parent">
+				<Offset><AbsDimension x="400" y="-220"/></Offset>
 				</Anchor>
 			</Anchors>
 			<Scripts>
@@ -672,7 +686,7 @@
 		<CheckButton name="$parentRighteousDefenseButton" inherits="OptionsCheckButtonTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parent">
-				<Offset><AbsDimension x="400" y="-220"/></Offset>
+				<Offset><AbsDimension x="400" y="-240"/></Offset>
 				</Anchor>
 			</Anchors>
 			<Scripts>
@@ -686,7 +700,7 @@
       <CheckButton name="$parentHandReckoningButton" inherits="OptionsCheckButtonTemplate">
 			<Anchors>
 				<Anchor point="TOPLEFT" relativeTo="$parent">
-				<Offset><AbsDimension x="400" y="-240"/></Offset>
+				<Offset><AbsDimension x="400" y="-260"/></Offset>
 				</Anchor>
 			</Anchors>
 			<Scripts>

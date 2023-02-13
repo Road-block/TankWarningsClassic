@@ -3,7 +3,18 @@ local ver = GetAddOnMetadata(addonName, "Version")
 local label = string.format("%s v%s",addonName, ver)
 local L = twc.L
 _G[addonName] = twc
+
 local CombatLogGetCurrentEventInfo = CombatLogGetCurrentEventInfo
+local FindAuraByName = AuraUtil and AuraUtil.FindAuraByName
+local After = C_Timer.After
+--[[ or function(spellName)
+	for i=1,40 do
+		local name,icon,count,debuffType,duration,expirationTime,source = UnitAura("player",i,filter or "HELPFUL")
+		if name == spellName then
+			return name,icon,count,debuffType,duration,expirationTime,source
+		end
+	end
+end]]
 ------- Config & Setup -------
 
 local last_stand = (GetSpellInfo(12975))
@@ -20,6 +31,7 @@ local righteous_defense = (GetSpellInfo(31789))
 local hand_reckoning = (GetSpellInfo(62124))
 local righteous_fury = (GetSpellInfo(25780))
 local divine_protection = (GetSpellInfo(498))
+local divine_sacrifice = (GetSpellInfo(64205))
 local ardent_defender = (GetSpellInfo(66233))
 local frost_presence = (GetSpellInfo(48263))
 local dark_command = (GetSpellInfo(56222))
@@ -42,6 +54,7 @@ twc._opt.survival_instincts = survival_instincts
 twc._opt.righteous_defense = righteous_defense
 twc._opt.hand_reckoning = hand_reckoning
 twc._opt.divine_protection = divine_protection
+twc._opt.divine_sacrifice = divine_sacrifice
 twc._opt.ardent_defender = ardent_defender
 twc._opt.dark_command = dark_command
 twc._opt.death_grip = death_grip
@@ -73,14 +86,14 @@ local TWC_isTanking = function()
 	end
 	if playerClass == "PALADIN" then
 		if IsEquippedItemType("Shields") then
-			local hasRF = AuraUtil.FindAuraByName(righteous_fury,"player","HELPFUL")
+			local hasRF = FindAuraByName(righteous_fury,"player","HELPFUL")
 			if hasRF then
 				return true
 			end
 		end
 	end
 	if playerClass == "DEATHKNIGHT" then
-		local hasFP = AuraUtil.FindAuraByName(frost_presence,"player","HELPFUL")
+		local hasFP = FindAuraByName(frost_presence,"player","HELPFUL")
 		if hasFP then
 			return true
 		end
@@ -133,6 +146,7 @@ function twc.OnLoad(self)
 			[righteous_defense] = true,
 			[hand_reckoning] = true,
 			[divine_protection] = true,
+			[divine_sacrifice] = true,
 			[ardent_defender] = true,
 			[dark_command] = true,
 			[death_grip] = true,
@@ -311,20 +325,17 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(event)
 		--Casts with critical expirations
 		if spellName == last_stand or spellName == shield_wall
 			or spellName == barkskin or spellName == survival_instincts
-			or spellName == divine_protection
+			or spellName == divine_protection or spellName == divine_sacrifice
 			or spellName == icebound_fort then
 			f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s activated!"], spellName))
 			if TankWarningsClassicSV.showExpirations == true then
-				for i=1,40 do
-					local name,icon,count,debuffType,duration,expirationTime = UnitBuff("player",i)
-					if name == spellName then
-						C_Timer.After(duration-3, function()
-								if UnitIsDeadOrGhost("player") ~= true then
-									f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s will expire in 3 seconds!"], spellName))
-								end
-							end)
-						break
-					end
+				local name,icon,count,debuffType,duration,expirationTime,source = FindAuraByName(spellName,"player","HELPFUL")
+				if name then
+					After(duration-3, function()
+						if UnitIsDeadOrGhost("player") ~= true then
+							f:TWC_SendChatMessage(string.format(TankWarningsClassicSV.messages["%s will expire in 3 seconds!"], spellName))
+						end
+					end)
 				end
 			end
 		--Casts without critical expirations
