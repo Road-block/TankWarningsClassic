@@ -320,6 +320,7 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(event)
 	local timestamp, spellType, hideCaster, sourceGUID, sourceName, sourceflags, sourceflags2, destGUID, destName, destFlags, destFlags2, spellId, spellName, spellSchool, missType = CombatLogGetCurrentEventInfo()
 	if not subevents[spellType] then return end
 	if sourceGUID ~= playerGUID then return end
+	if not TankWarningsClassicSV.abilities[spellName] then return end
 
 	if spellType == "SPELL_CAST_SUCCESS" then
 		--Casts with critical expirations
@@ -376,9 +377,12 @@ function f:COMBAT_LOG_EVENT_UNFILTERED(event)
 	end
 end
 
+local SendChatMessage
 function f:TWC_SendChatMessage(message)
-	local SendChatMessage
-	if IsInInstance() then
+	if IsInInstance()
+		or not (TankWarningsClassicSV.raidYell or TankWarningsClassicSV.raidSay
+			or TankWarningsClassicSV.partyYell or TankWarningsClassicSV.partySay
+			or TankWarningsClassicSV.noGrpYell or TankWarningsClassicSV.noGrpSay) then
 		SendChatMessage = _G.SendChatMessage
 	else
 		SendChatMessage = TWC_Print
@@ -387,38 +391,38 @@ function f:TWC_SendChatMessage(message)
 		if IsInRaid() then -- raid
 			if TankWarningsClassicSV.raidDoNothing == true then
 				if TankWarningsClassicSV.raidWarning == true then
-					SendChatMessage(message, "RAID_WARNING", "Common")
+					SendChatMessage(message, "RAID_WARNING")
 				end
 				if TankWarningsClassicSV.raidChat == true then
-					SendChatMessage(message, "RAID", "Common")
+					SendChatMessage(message, "RAID")
 				end
 				if TankWarningsClassicSV.raidYell == true then
-					SendChatMessage(message, "YELL", "Common")
+					SendChatMessage(message, "YELL")
 				end
 				if TankWarningsClassicSV.raidSay == true then
-					SendChatMessage(message, "SAY", "Common")
+					SendChatMessage(message, "SAY")
 				end
 			end
 		else -- party
 			if TankWarningsClassicSV.partyDoNothing == true then
 				if TankWarningsClassicSV.partyChat == true then
-					SendChatMessage(message, "PARTY", "Common")
+					SendChatMessage(message, "PARTY")
 				end
 				if TankWarningsClassicSV.partyYell == true then
-					SendChatMessage(message, "YELL", "Common")
+					SendChatMessage(message, "YELL")
 				end
 				if TankWarningsClassicSV.partySay == true then
-					SendChatMessage(message, "SAY", "Common")
+					SendChatMessage(message, "SAY")
 				end
 			end
 		end
 	else -- solo
 		if TankWarningsClassicSV.noGrpDoNothing == true then
 			if TankWarningsClassicSV.noGrpYell == true then
-				SendChatMessage(message, "YELL", "Common")
+				SendChatMessage(message, "YELL")
 			end
 			if TankWarningsClassicSV.noGrpSay == true then
-				SendChatMessage(message, "SAY", "Common")
+				SendChatMessage(message, "SAY")
 			end
 		end
 	end
